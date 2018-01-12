@@ -23,21 +23,17 @@ public class CommandCd extends Command {
     public void execute(FileClient client, String args) {
         try {
 
-            // Stream<Path> list = Files.list(path);
-            // client.setDir(new File(client.getDir().getPath().concat(args)));
+            String dir = client.getDir().getAbsolutePath();
+            if (!dir.endsWith("/")) dir += "/";
 
-            client.setDir(new File(client.getDir() + args + "\\"));
-
-            // switch (args) {
-            // case "..":
-            // client.setDir(client.getDir().getParentFile());
-            // break;
-            // default:
-            // client.setDir(client.getDir().getParentFile());
-            // break;
-            // }
-            //
-        } catch (InvalidPathException e) {
+            File newDir = new File(dir + args);
+            if (newDir.exists() && newDir.isDirectory()) {
+                client.setDir(newDir);
+                client.send("OK.");
+            } else {
+                client.send(args + " n'est pas un dossier valide.");
+            }
+        } catch (IOException e) {
             try {
                 client.send("Introuvable");
             } catch (IOException e1) {
